@@ -20,8 +20,8 @@ terraform {
       version = "~> 6.20"
     }
   }
-  /*backend "gcs" {
-    bucket = "app-terraform-backend-config-bucket"
-    prefix = "state/wiz.tfstate"
-  }*/
+  backend "gcs" {
+    bucket = "tasky-config-bucket"
+    prefix = "terraform/state/wiz.tfstate"
+  }
 }
