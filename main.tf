@@ -44,7 +44,7 @@ resource "google_compute_firewall" "allow_ssh_mongo" {
     ports    = ["22", "27017"]
   }
 
-  source_ranges = ["0.0.0.0/0"] 
+  source_ranges = ["0.0.0.0/0"]
   target_tags   = ["mongodb"]
 }
 
@@ -56,16 +56,14 @@ resource "google_compute_instance" "mongodb" {
   name         = "${var.app}-mongodb-instance"
   machine_type = "e2-medium"
   zone         = "us-central1-a"
-
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
       size  = 20
     }
   }
-
   network_interface {
-    network = google_compute_network.vpc.id
+    network    = google_compute_network.vpc.id
     subnetwork = google_compute_subnetwork.public_subnet.id
     access_config {}
   }
@@ -105,9 +103,13 @@ resource "google_compute_instance" "mongodb" {
   EOT
 
   tags = ["mongodb"]
-
   service_account {
     scopes = ["cloud-platform"]
+  }
+  lifecycle {
+    ignore_changes = [
+      metadata
+    ]
   }
 }
 
@@ -117,35 +119,35 @@ resource "google_compute_instance" "mongodb" {
 
 resource "google_service_account" "gke-nodes-sa" {
   project      = var.project_id
-  provider = google-beta
+  provider     = google-beta
   account_id   = "${var.app}-gke-nodes-sa"
   display_name = "GKE Nodes Service Account"
-  description = "Service Account for GKE nodes to access GCP resources"
+  description  = "Service Account for GKE nodes to access GCP resources"
 }
 
 
 resource "google_container_cluster" "gke" {
-  provider = google-beta
-  name     = "${var.app}-gke-cluster"
-  location = var.zone
-  network    = google_compute_network.vpc.id
-  subnetwork = google_compute_subnetwork.private_subnet.id
+  provider                 = google-beta
+  name                     = "${var.app}-gke-cluster"
+  location                 = var.zone
+  network                  = google_compute_network.vpc.id
+  subnetwork               = google_compute_subnetwork.private_subnet.id
   remove_default_node_pool = true
   initial_node_count       = 1
-  deletion_protection = false
-  datapath_provider = "ADVANCED_DATAPATH"
+  deletion_protection      = false
+  datapath_provider        = "ADVANCED_DATAPATH"
 
   private_cluster_config {
     enable_private_nodes = true
   }
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block = "88.163.242.155/32"
+      cidr_block   = "88.163.242.155/32"
       display_name = "Home IP"
     }
   }
   ip_allocation_policy {
-    cluster_secondary_range_name = "${var.app}-gke-pods"
+    cluster_secondary_range_name  = "${var.app}-gke-pods"
     services_secondary_range_name = "${var.app}-gke-services"
   }
   secret_manager_config {
@@ -156,9 +158,9 @@ resource "google_container_cluster" "gke" {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
   node_config {
-    machine_type = "e2-medium"
+    machine_type    = "e2-medium"
     service_account = google_service_account.gke-nodes-sa.email
-    tags = ["gke-node"]
+    tags            = ["gke-node"]
   }
 }
 
@@ -169,9 +171,9 @@ resource "google_container_node_pool" "primary_nodes" {
   node_count = 1
   node_config {
     machine_type    = "e2-medium"
-    disk_size_gb = 30
+    disk_size_gb    = 30
     service_account = google_service_account.gke-nodes-sa.email
-    tags = ["gke-node"]
+    tags            = ["gke-node"]
   }
 }
 
@@ -179,7 +181,7 @@ resource "google_container_node_pool" "primary_nodes" {
 # Storage Bucket & Artifact Registry                                         
 ###############################################################
 resource "google_storage_bucket" "tasky_bucket" {
-  name          = "${var.app}-bucket"
+  name          = "${var.app}-db-backups"
   location      = var.region
   force_destroy = true
 
@@ -187,9 +189,9 @@ resource "google_storage_bucket" "tasky_bucket" {
 }
 
 resource "google_artifact_registry_repository" "tasky_repo" {
-  provider = google-beta
-  repository_id     = "${var.app}-docker-images"
-  location = var.region
-  format   = "DOCKER"
-  description = "Artifact Registry repository for Tasky application"
+  provider      = google-beta
+  repository_id = "${var.app}-docker-images"
+  location      = var.region
+  format        = "DOCKER"
+  description   = "Artifact Registry repository for Tasky application"
 }
