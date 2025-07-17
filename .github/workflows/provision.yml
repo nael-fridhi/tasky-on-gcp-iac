@@ -1,4 +1,4 @@
-name: 'Terraform Plan & Apply'
+name: 'pipeline'
 
 on:
   pull_request:
