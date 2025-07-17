@@ -3,9 +3,9 @@
 This repository provides the **Infrastructure as Code (IaC)** for deploying the **Tasky application** on **Google Cloud Platform (GCP)**. It's an excellent starting point for learning how to leverage various Google Cloud services to deploy a modern application.
 
 
-[![build](https://github.com/nael-fridhi/tasky-on-gcp-iac/actions/workflows/provision.yml/badge.svg)](https://github.com/nael-fridhi/tasky-on-gcp-iac/actions/workflows/provision.yml)  
-![](https://img.shields.io/badge/terraform-v1.11-blue)
-![linesofcode](https://aschey.tech/tokei/github/nael-fridhi/tasky-on-gcp-iac?category=code)
+[![build](https://github.com/nael-fridhi/tasky-on-gcp-iac/actions/workflows/provision.yml/badge.svg)](https://github.com/nael-fridhi/tasky-on-gcp-iac/actions/workflows/provision.yml) ![](https://img.shields.io/badge/terraform-v1.11-blue)
+![](https://img.shields.io/badge/docs-in_progress-orange)
+![linesofcode](https://aschey.tech/tokei/github/nael-fridhi/tasky-on-gcp-iac)
 ---
 ## Provisioned Resources
 
